@@ -17,36 +17,6 @@ const markup = galleryItems.map(({ preview, original, description }) =>
     </a>
 </div>`).join('');
 
-const options = {
-	/*
-	 * Prevents the lightbox from closing when clicking its background.
-	 */
-	closable: true,
-	/*
-	 * One or more space separated classes to be added to the basicLightbox element.
-	 */
-	className: '',
-	/*
-	 * Function that gets executed before the lightbox will be shown.
-	 * Returning false will prevent the lightbox from showing.
-	 */
-	onShow: (instance) => {
-		
-        gallery.addEventListener('keydown', (event) => {
-			if (event.code === 'Escape') {
-				instance.close();
-			}
-		})
-			
-	},
-	/*
-	 * Function that gets executed before the lightbox closes.
-	 * Returning false will prevent the lightbox from closing.
-	 */
-	onClose: (instance) => {
-        // console.log("ПІСЛЯ")
-    }
-}
 
 
 
@@ -61,12 +31,32 @@ function openModal(event) {
     if(event.target.nodeName !== 'IMG') {
         return;
     }
+	
+	const options = {
+		
+		onShow: (instance) => {
+			
+			gallery.addEventListener('keydown', onEscPress)
+				
+		},
+		
+		onClose: (instance) => {
+			gallery.removeEventListener('keydown', onEscPress)
+		}
+	}
 
+	
 	const largeImage = event.target.getAttribute('data-source');
+	
 	const instance = basicLightbox.create(`<img
 	src="${largeImage}"
 	/>`, options);
 	
 	instance.show();
-
+	
+	function onEscPress(event) {
+		if (event.code === 'Escape') {
+			instance.close();
+		}
+	}
 }
